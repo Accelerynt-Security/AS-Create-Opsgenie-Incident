@@ -7,7 +7,7 @@ For any technical questions, please contact info@accelerynt.com
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAccelerynt-Security%2FAS-Create-Opsgenie-Incident%2Fmain%2Fazuredeploy.json)
 [![Deploy to Azure Gov](https://aka.ms/deploytoazuregovbutton)](https://portal.azure.us/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAccelerynt-Security%2FAS-Create-Opsgenie-Incident%2Fmain%2Fazuredeploy.json)       
 
-This playbook is intended to be run from a Microsoft Sentinel Incident. It will create an incident in Opsgenie with the information from a Microsoft Sentinel incident..
+This playbook is intended to be run from a Microsoft Sentinel Incident. It will create either an incident or an alert in Opsgenie with the information from a Microsoft Sentinel incident.
 
 ![Opsgenie_Demo_1](Images/Opsgenie_Demo_1.png)
 
@@ -16,13 +16,34 @@ This playbook is intended to be run from a Microsoft Sentinel Incident. It will 
 
 The following items are required under the template settings during deployment: 
 
-* An Opsgenie account with a standard or enterprise plan and an [API integration](https://support.atlassian.com/opsgenie/docs/create-a-default-api-integration/)
+* An Opsgenie account and an [API integration](https://github.com/Accelerynt-Security/AS-Create-Opsgenie-Incident#create-an-opsgenie-api-integration)
+* For creating Opsgenie [incidents](https://docs.opsgenie.com/docs/incident-api), a standard or enterprise plan is needed. This is not a requirement for creating Opsgenie [alerts](https://docs.opsgenie.com/docs/alert-api). It should be noted that structurally, incident and alert objects are nearly identical in Opsgenie, and either works well with Microsoft Sentinel incident data. If you are using a trial account, select the alert endpoint during deployment
 * An [Azure Key Vault Secret](https://github.com/Accelerynt-Security/AS-Create-Opsgenie-Incident#create-an-azure-key-vault-secret) containing your Okta API Token 
-
 
 # 
 ### Setup
 
+#### Create an Opsgenie API integration
+
+From your Opsgenie account, select the "**Teams**" tab, and then click "**Add Team**".
+
+![opsgenie_setup_1](Images/opsgenie_setup_1.png)
+
+Enter "**Microsoft Sentinel**" in the name field and add an optional description, then click "**Add team**".
+
+![opsgenie_setup_2](Images/opsgenie_setup_2.png)
+
+From the newly created team page, navigate to "**Integrations**" from the left menu blade, then click "**Add integration**".
+
+![opsgenie_setup_3](Images/opsgenie_setup_3.png)
+
+Although there are pre-built integration apps for Microsoft Azure, there is currently not one for Microsoft Sentinel, therefore the "**API**" integration must be selected.
+
+![opsgenie_setup_4](Images/opsgenie_setup_4.png)
+
+Take note of the "**API Key**" that is generated, as it will be needed later, then click "**Save integration**".
+
+![opsgenie_setup_5](Images/opsgenie_setup_5.png)
 
 #### Create an Azure Key Vault Secret:
 
@@ -32,14 +53,13 @@ Navigate to an existing Key Vault or create a new one. From the Key Vault overvi
 
 ![Opsgenie_Key_Vault_1](Images/Opsgenie_Key_Vault_1.png)
 
-Choose a name for the secret, such as "**AS-Create-Opsgenie-Incident-API-Token**", and enter the Okta API Token copied previously in the "**Value**" field. All other settings can be left as is. Click "**Create**". 
+Choose a name for the secret, such as "**AS-Create-Opsgenie-Incident-API-Key**", and enter the Opsgenie API Key copied previously in the [previous section](https://github.com/Accelerynt-Security/AS-Create-Opsgenie-Incident#create-an-opsgenie-api-integration). All other settings can be left as is. Click "**Create**". 
 
 ![Opsgenie_Key_Vault_2](Images/Opsgenie_Key_Vault_2.png)
 
 Once your secret has been added to the vault, navigate to the "**Access policies**" menu option, also found under the "**Settings**" section on the Key Vault page menu. Leave this page open, as you will need to return to it once the playbook has been deployed. See [Granting Access to Azure Key Vault](https://github.com/Accelerynt-Security/AS-Create-Opsgenie-Incident#granting-access-to-azure-key-vault).
 
 ![Opsgenie_Key_Vault_3](Images/Opsgenie_Key_Vault_3.png)
-
 
 #
 ### Deployment                                                                                                         
@@ -61,7 +81,9 @@ In the **Project Details** section:
 
 In the **Instance Details** section:   
 
-* **Playbook Name**: This can be left as "**AS-Create-Opsgenie-Incident**" or you may change it.  
+* **Playbook Name**: This can be left as "**AS-Create-Opsgenie-Incident**" or you may change it.
+
+* **Opsgenie Endpoint**: This can be left as "**/v1/incidents/create**" if mapping Microsoft Sentinel incidents to Opsgenie incidents, or changed to "**/v2/alerts**"  if mapping Microsoft Sentinel incidents to Opsgenie alerts.
 
 * **Key Vault Name**: Enter the name of the Key Vault referenced in [Create an Azure Key Vault Secret](https://github.com/Accelerynt-Security/AS-Create-Opsgenie-Incident#create-an-azure-key-vault-secret).
 
