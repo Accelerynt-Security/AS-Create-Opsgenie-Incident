@@ -11,6 +11,15 @@ This playbook is intended to be run from a Microsoft Sentinel Incident. It will 
 
 ![Opsgenie_Demo_1](Images/Opsgenie_Demo_1.png)
 
+This playbook maps Microsoft Sentinel incident severity over to Opsgenie incident/alert priority like so:
+
+| **Microsoft Sentinel**  |   **Opsgenie**       |
+| ----------------------  |   ------------       |
+|  High	                  |    P2 - High         |
+|  Medium                 |    P3 - Moderate     |
+|  Low	                  |    P4 - Low          |
+|  Informational          |    P5 - Informational|
+
 #
 ### Requirements
 
