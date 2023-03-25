@@ -271,7 +271,7 @@
                                     "Content-Type": "application/json"
                                 },
                                 "method": "POST",
-                                "uri": "https://api.opsgenie.com@{parameters('OpsgenieEndpoint')}"
+                                "uri": "[concat('https://api.opsgenie.com', parameters('OpsgenieEndpoint'))]"
                             }
                         }
                     },
