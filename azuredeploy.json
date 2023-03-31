@@ -217,7 +217,7 @@
                         },
                         "HTTP_-_Create_Opsgenie_incident": {
                             "runAfter": {
-                                "Condition_-_Check_for_high_severity": [
+                                "Switch_-_Map_Sentinel_severity_to_Opsgenie_priority": [
                                     "Succeeded"
                                 ]
                             },
